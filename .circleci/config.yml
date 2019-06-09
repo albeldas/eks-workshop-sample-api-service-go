@@ -1,16 +1,13 @@
-version: 2
-jobs:
- build:
-   machine: true
-   steps:
-     - checkout
-     # start proprietary DB using private Docker image
-     # with credentials stored in the UI
-     - run: |
-         $(aws ecr get-login --no-include-email --region eu-west-1)
-     # build the application image
-     - run: docker build -t liran-test/app:$CIRCLE_BRANCH .
+version: 2.1
+orbs:
+  aws-ecr: circleci/aws-ecr@0.0.2
+workflows:
+  build-and-deploy:
+    jobs:
+      - aws-ecr/build_and_push_image:
+          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+          repo: "${AWS_RESOURCE_NAME_PREFIX}"
+          region: ${AWS_DEFAULT_REGION}
+          tag: "${CIRCLE_SHA1}"
+      - ...
 
-     - run: docker tag liran-test:$CIRCLE_BRANCH 549765205618.dkr.ecr.eu-west-1.amazonaws.com/liran-test:$CIRCLE_BRANCH
-     # deploy the image
-     - run: docker push company/app:$CIRCLE_BRANCH
