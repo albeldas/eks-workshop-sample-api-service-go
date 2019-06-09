@@ -9,5 +9,4 @@ workflows:
           repo: "${AWS_RESOURCE_NAME_PREFIX}"
           region: ${AWS_DEFAULT_REGION}
           tag: "${CIRCLE_SHA1}"
-      - ...
 
